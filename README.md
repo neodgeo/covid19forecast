@@ -1,2 +1,2 @@
-# covid19forecast
-A meteor app created to show forecast of covid-19 infected people in France
+# covid19forecastapp
+A meteor app to showcase forecast of covid-19 infected people in France
