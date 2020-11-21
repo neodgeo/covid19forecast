@@ -12,22 +12,21 @@ const cumulativeCaseSchema = new SimpleSchema({
         max:"100"
     },
     date:{
-        type:Date,
+        type:String,
         label:"Date de la mesure",
         max:"100"
     },
     value:{
         type:Number,
         label:"nombre de personnes infectées",
-        max:"150"
     },
-    content:{
-       type:String,
-       label:"content encoded of the file",
+    isPredict:{
+        type:Boolean,
+        label:"if the value is prediction or not"
     },
     createdAt: {
         type: Date,
-        label: "file creation date",
+        label: "creation date",
         autoValue: function () {
             if (this.isInsert) {
             return new Date();

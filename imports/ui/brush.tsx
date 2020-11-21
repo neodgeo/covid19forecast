@@ -1,6 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
 import { AreaClosed, Line, Bar } from '@visx/shape';
-import appleStock, { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import { curveMonotoneX } from '@visx/curve';
 import { GridRows, GridColumns } from '@visx/grid';
 import { scaleTime, scaleLinear } from '@visx/scale';
@@ -11,10 +10,11 @@ import { LinearGradient } from '@visx/gradient';
 import { max, extent, bisector } from 'd3-array';
 import { timeFormat } from 'd3-time-format';
 
-type TooltipData = AppleStock;
+type TooltipData = {
+  date:string;
+  value: number;
+};
 
-const stock = appleStock.slice(800);
-console.log(stock);
 export const background = '#3b6978';
 export const background2 = '#204051';
 export const accentColor = '#edffea';
@@ -32,9 +32,9 @@ import { Text } from '@visx/text';
 const formatDate = timeFormat("%b %d, '%y");
 
 // accessors
-const getDate = (d: AppleStock) => new Date(d.date);
-const getStockValue = (d: AppleStock) => d.close;
-const bisectDate = bisector<AppleStock, Date>(d => new Date(d.date)).left;
+const getDate = (d: TooltipData) => new Date(d.date);
+const getStockValue = (d: TooltipData) => d.value;
+const bisectDate = bisector<TooltipData, Date>(d => new Date(d.date)).left;
 
 export type AreaProps = {
   width: string;
@@ -51,6 +51,7 @@ export default withTooltip<AreaProps, TooltipData>(
     title = '',
     showTooltip,
     hideTooltip,
+    data,
     tooltipData,
     tooltipTop = 0,
     tooltipLeft = 0,
@@ -66,7 +67,7 @@ export default withTooltip<AreaProps, TooltipData>(
       () =>
         scaleTime({
           range: [margin.left, innerWidth + margin.left],
-          domain: extent(stock, getDate) as [Date, Date],
+          domain: extent(data, getDate) as [Date, Date],
         }),
       [innerWidth, margin.left],
     );
@@ -74,7 +75,7 @@ export default withTooltip<AreaProps, TooltipData>(
       () =>
         scaleLinear({
           range: [innerHeight + margin.top, margin.top],
-          domain: [0, (max(stock, getStockValue) || 0) + innerHeight / 3],
+          domain: [0, (max(data, getStockValue) || 0) + innerHeight / 3],
           nice: true,
         }),
       [margin.top, innerHeight],
@@ -85,9 +86,9 @@ export default withTooltip<AreaProps, TooltipData>(
       (event: React.TouchEvent<SVGRectElement> | React.MouseEvent<SVGRectElement>) => {
         const { x } = localPoint(event) || { x: 0 };
         const x0 = dateScale.invert(x);
-        const index = bisectDate(stock, x0, 1);
-        const d0 = stock[index - 1];
-        const d1 = stock[index];
+        const index = bisectDate(data, x0, 1);
+        const d0 = data[index - 1];
+        const d1 = data[index];
         let d = d0;
         if (d1 && getDate(d1)) {
           d = x0.valueOf() - getDate(d0).valueOf() > getDate(d1).valueOf() - x0.valueOf() ? d1 : d0;
@@ -142,7 +143,7 @@ export default withTooltip<AreaProps, TooltipData>(
             pointerEvents="none"
           />
           <AreaClosed<AppleStock>
-            data={stock}
+            data={data}
             x={d => dateScale(getDate(d)) ?? 0}
             y={d => stockValueScale(getStockValue(d)) ?? 0}
             yScale={stockValueScale}
@@ -204,7 +205,7 @@ export default withTooltip<AreaProps, TooltipData>(
               left={tooltipLeft + 12}
               style={tooltipStyles}
             >
-              {`$${getStockValue(tooltipData)}`}
+              {`${getStockValue(tooltipData)} cas`}
             </TooltipWithBounds>
             <Tooltip
               top={innerHeight + margin.top - 14}

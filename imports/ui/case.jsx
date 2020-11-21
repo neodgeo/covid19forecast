@@ -32,7 +32,10 @@ const styles = StyleSheet.create({
     height:'180px',
     display:'flex',
     flexDirection:'column',
-    margin:'20px auto'
+    margin:'20px auto',
+    '@media only screen and (min-width:300px) and (max-width:1024px)':{
+        width:'100%',
+    }
   },
   level1:{
       margin:'auto',
@@ -42,7 +45,11 @@ const styles = StyleSheet.create({
     flexDirection:'column',
     height:'45%',
     margin:'auto',
-    width:'70%'
+    width:'70%',
+    '@media only screen and (min-width:300px) and (max-width:1024px)':{
+        width:'90%',
+        height:'50px'
+    }
   },
   inlineCase:{
     display:'flex',
